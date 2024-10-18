@@ -20,6 +20,11 @@ app.use(cors(corsOptions));
 // Middleware for parsing JSON data
 app.use(express.json());
 
+// Define a root route
+app.get("/", (req, res) => {
+  res.send("Hello from Express!");
+});
+
 // Route for saving a subscription
 app.post("/api/save-subscription/", function (req, res) {
   if (!isValidSaveRequest(req, res)) {
