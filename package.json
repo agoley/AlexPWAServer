@@ -1,0 +1,23 @@
+{
+  "name": "alexpwaserver",
+  "version": "1.0.0",
+  "description": "Server for AlexPWA",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agoley/AlexPWAServer.git"
+  },
+  "author": "agoley",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/agoley/AlexPWAServer/issues"
+  },
+  "homepage": "https://github.com/agoley/AlexPWAServer#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.1"
+  }
+}
