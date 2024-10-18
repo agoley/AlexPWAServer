@@ -2,7 +2,7 @@ const { randomUUID } = require("crypto");
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const port = 443;
+const port = process.env.PORT || 8080;
 
 // Fancy data store for subscriptions ;)
 let subscriptionDb = null;
