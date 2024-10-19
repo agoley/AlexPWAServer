@@ -2,10 +2,11 @@ const { randomUUID } = require("crypto");
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const { resolve } = require("path");
 const port = process.env.PORT || 8080;
 
 // Fancy data store for subscriptions ;)
-let subscriptionDb = null;
+let subscriptionDb;
 
 // Configure CORS for my PWA origin
 const corsOptions = {
@@ -26,17 +27,17 @@ app.get("/", (req, res) => {
 });
 
 // Route for saving a subscription
-app.post("/api/save-subscription/", function (req, res) {
+app.post("/api/save-subscription/", (req, res) => {
   if (!isValidSaveRequest(req, res)) {
     return;
   }
 
   return saveSubscriptionToDatabase(req.body)
-    .then(function () {
+    .then(() => {
       res.setHeader("Content-Type", "application/json");
       res.send(JSON.stringify({ data: { success: true } }));
     })
-    .catch(function (err) {
+    .catch((err) => {
       res.status(500);
       res.setHeader("Content-Type", "application/json");
       res.send(
@@ -58,12 +59,11 @@ app.listen(port, () => {
 
 function isValidSaveRequest(req, res) {
   let subscription = req.body;
-
   return subscription.endpoint && subscription.keys;
 }
 
 function saveSubscriptionToDatabase(subscription) {
   console.log(subscription);
   subscriptionDb = subscription;
-  return new Promise.resolve();
+  return new Promise((resolve, reject) => resolve(subscription));
 }
