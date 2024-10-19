@@ -2,11 +2,17 @@ const { randomUUID } = require("crypto");
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const { resolve } = require("path");
 const port = process.env.PORT || 8080;
+const webpush = require("web-push");
 
 // Fancy data store for subscriptions ;)
 let subscriptionDb;
+
+webpush.setVapidDetails(
+  "mailto:ajgoley@gmail.com", // Needs to let push provider know how to contact owner
+  process.env.PUBLIC_KEY,
+  process.env.PRIVATE_KEY,
+);
 
 // Configure CORS for my PWA origin
 const corsOptions = {
@@ -52,6 +58,17 @@ app.post("/api/save-subscription/", (req, res) => {
     });
 });
 
+app.post("/api/trigger-push-msg/", (req, res) => {
+  return getSubscriptionsFromDatabase().then((subscription) => {
+    return triggerPushMsg(
+      subscription,
+      JSON.stringify({
+        tag: new Date().getTime(),
+      }),
+    );
+  });
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
@@ -63,7 +80,26 @@ function isValidSaveRequest(req, res) {
 }
 
 function saveSubscriptionToDatabase(subscription) {
-  console.log(subscription);
   subscriptionDb = subscription;
   return new Promise((resolve, reject) => resolve(subscription));
 }
+
+function deleteSubscriptionFromDatabase() {
+  subscriptionDb = null;
+  return new Promise((resolve, reject) => resolve(subscription));
+}
+
+function getSubscriptionsFromDatabase() {
+  return new Promise((resolve, reject) => resolve(subscriptionDb));
+}
+
+const triggerPushMsg = function (subscription, dataToSend) {
+  return webpush.sendNotification(subscription, dataToSend).catch((err) => {
+    if (err.statusCode === 404 || err.statusCode === 410) {
+      console.log("Subscription has expired or is no longer valid: ", err);
+      return deleteSubscriptionFromDatabase();
+    } else {
+      throw err;
+    }
+  });
+};
