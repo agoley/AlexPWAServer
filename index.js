@@ -14,9 +14,23 @@ webpush.setVapidDetails(
   process.env.PRIVATE_KEY,
 );
 
+const allowedOrigins = ["https://agoley.github.io", "https://agoley.com"];
+
 // Configure CORS for my PWA origin
 const corsOptions = {
-  origin: "https://agoley.github.io", // Accept requests from my PWA
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg =
+        "The CORS policy for this site does not " +
+        "allow access from the specified Origin.";
+      return callback(new Error(msg), false);
+    }
+
+    return callback(null, true);
+  },
   methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
   allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
   credentials: true, // Allow credentials (cookies, authorization headers)
@@ -94,7 +108,9 @@ function getSubscriptionsFromDatabase() {
 }
 
 const triggerPushMsg = function (subscription, dataToSend) {
+  console.log("sending...");
   return webpush.sendNotification(subscription, dataToSend).catch((err) => {
+    console.log("sent");
     if (err.statusCode === 404 || err.statusCode === 410) {
       console.log("Subscription has expired or is no longer valid: ", err);
       return deleteSubscriptionFromDatabase();
