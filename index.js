@@ -73,6 +73,7 @@ app.post("/api/save-subscription/", (req, res) => {
 });
 
 app.post("/api/trigger-push-msg/", (req, res) => {
+  console.log("trigger push");
   return getSubscriptionsFromDatabase().then((subscription) => {
     return triggerPushMsg(
       subscription,
