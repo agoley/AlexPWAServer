@@ -73,8 +73,9 @@ app.post("/api/save-subscription/", (req, res) => {
 });
 
 app.post("/api/trigger-push-msg/", (req, res) => {
-  console.log("trigger push");
+  console.log("triggering push");
   return getSubscriptionsFromDatabase().then((subscription) => {
+    console.log(subscription);
     return triggerPushMsg(
       subscription,
       JSON.stringify({
@@ -105,6 +106,7 @@ function deleteSubscriptionFromDatabase() {
 }
 
 function getSubscriptionsFromDatabase() {
+  console.log("getting sub");
   return new Promise((resolve, reject) => resolve(subscriptionDb));
 }
 
